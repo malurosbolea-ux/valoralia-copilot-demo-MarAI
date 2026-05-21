@@ -9,3 +9,4 @@ langgraph
 sentence-transformers
 chromadb
 joblib
+protobuf==3.20.3
