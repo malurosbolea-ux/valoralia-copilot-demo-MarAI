@@ -1,0 +1,11 @@
+streamlit
+langchain
+langchain-core
+langchain-google-genai
+langchain-huggingface
+langchain-chroma
+langchain-text-splitters
+langgraph
+sentence-transformers
+chromadb
+joblib
