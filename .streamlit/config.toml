@@ -1,7 +1,7 @@
-# Tema corporativo VALORALIA (navy / rojo / rosa)
+# Identidad MarIA Copilot (mauve / púrpura / índigo)
 [theme]
-primaryColor = "#C53030"
-backgroundColor = "#FBF8F5"
+primaryColor = "#6E5C99"
+backgroundColor = "#FBF8F8"
 secondaryBackgroundColor = "#FFFFFF"
-textColor = "#1C2A3D"
+textColor = "#2A2440"
 font = "serif"
