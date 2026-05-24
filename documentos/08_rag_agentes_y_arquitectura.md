@@ -1,0 +1,11 @@
+# Por qué un RAG no alucina: la arquitectura de MarIA
+
+Un modelo de lenguaje, cuando no conoce la respuesta, tiende a inventarse una explicación convincente pero falsa. Es lo que se llama alucinación. En el sector inmobiliario eso es inaceptable: una cifra equivocada de impuestos o una norma inexistente tienen consecuencias reales. MarIA, el asistente conversacional de VALORALIA, está diseñada precisamente para no caer en eso, y lo consigue combinando tres piezas.
+
+La primera pieza es la representación del lenguaje mediante embeddings. Un embedding convierte un texto en un vector de números que captura su significado, de modo que dos textos que hablan de lo mismo quedan cerca en el espacio vectorial. Uso un modelo de embeddings multilingüe que entiende bien el español.
+
+La segunda pieza es el RAG (generación aumentada por recuperación). En lugar de dejar que el modelo responda de memoria, primero troceo mis documentos verificados en fragmentos (chunking), convierto cada fragmento en un vector y los guardo en una base de datos vectorial, ChromaDB. Cuando llega una pregunta, busco los fragmentos más parecidos por similitud y construyo un prompt que obliga al modelo a responder solo con esa información y a reconocer cuándo no la tiene. Así, si algo no está en la documentación, MarIA lo dice en lugar de inventarlo.
+
+La tercera pieza es el agente con herramientas. Un agente no solo responde texto: razona siguiendo el ciclo pensar, actuar y observar, y puede ejecutar herramientas, que no son más que funciones de Python con una descripción. MarIA dispone de cuatro: estimar el precio de una vivienda, comparar zonas, buscar en la documentación (que es el propio RAG convertido en herramienta, lo que se conoce como RAG agéntico) y preparar una solicitud de visita. Esta última aplica el patrón human-in-the-loop: una acción sensible no se cierra sola, sino que queda pendiente de confirmación humana.
+
+Coordinando todo hay un router que, ante cada pregunta, decide si es informativa (y la envía al RAG) o si pide una acción (y la envía al agente). Esta arquitectura modular es lo que permite que MarIA combine la fiabilidad del RAG con la capacidad de actuar del agente, y es también lo que hace el sistema fácil de mantener y de ampliar: para que sepa más, basta con añadir más documentos a su base de conocimiento.

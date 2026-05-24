@@ -1,0 +1,11 @@
+# Metodología de VALORALIA
+
+VALORALIA es el motor de tasación que he desarrollado como Trabajo de Fin de Máster. Su objetivo es estimar el precio de venta de viviendas en Madrid, abarcando los distritos de la ciudad y los municipios de su área metropolitana. Lo que lo distingue de un AVM convencional es que es un modelo híbrido: combina los datos tabulares de la vivienda con el análisis visual de sus fotografías.
+
+Los datos proceden de anuncios reales del portal Pisos.com, obtenidos mediante scraping. Partí de algo más de 8.000 anuncios y, tras la limpieza (eliminar duplicados, precios imposibles, superficies erróneas y registros incompletos), me quedé con unos 8.000 registros válidos repartidos en las distintas zonas de Madrid.
+
+De cada vivienda utilizo variables tabulares como la superficie en metros cuadrados, el número de habitaciones y de baños, la planta, y la presencia de ascensor, terraza, garaje o calefacción, además del estado de reforma y la zona. La parte innovadora es la visual: a las fotografías del anuncio les aplico una red neuronal convolucional, la ResNet50, que extrae características visuales (luminosidad, calidad de los acabados, amplitud aparente). Como esas características son muchísimas, las reduzco con un análisis de componentes principales (PCA) hasta quedarme con las más informativas, que se unen a las variables tabulares.
+
+Sobre ese conjunto entrené y comparé varios algoritmos. El mejor fue un modelo de *gradient boosting* (la familia de LightGBM y XGBoost) en su configuración híbrida optimizada. Sus resultados son sólidos: un coeficiente de determinación logarítmico de 0,91, un error porcentual medio absoluto (MAPE) cercano al 20 por ciento y un error mediano de unos 36.000 euros. Para entender qué pesa más en la predicción usé valores SHAP, que mostraron que las variables tabulares aportan en torno al 80 por ciento de la decisión y la información visual el 20 por ciento restante. Es decir, las fotos no sustituyen a los datos duros, pero aportan un matiz que mejora la precisión.
+
+El resultado se ofrece como una estimación central acompañada de un intervalo, para comunicar de forma honesta la incertidumbre propia de cualquier valoración.
