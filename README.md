@@ -1,74 +1,68 @@
-# VALORALIA Copilot: MarIA 🏠✨
+# Valoralia copilot (MarIA): Asistente conversacional con RAG y agentes
 
-*El asistente que conversa, razona y tasa.*
+[cite_start]Esta memoria documenta VALORALIA Copilot, al que he llamado MarIA: un asistente conversacional que combina recuperación aumentada por generación (RAG) y un agente con herramientas, construido sobre VALORALIA, el motor de tasación inmobiliaria que desarrollé como Trabajo de Fin de Máster[cite: 20].
 
-Hola, soy **María Luisa Ros Bolea**. Este repositorio contiene el código y la documentación de **VALORALIA Copilot** (a quien he bautizado como MarIA), la capa conversacional de mi Trabajo de Fin de Máster en Big Data e Inteligencia Artificial. 
+## Enlaces del proyecto
 
-Puedes conectar conmigo y conocer más sobre mi trayectoria combinando la estrategia digital, el análisis de datos y la inteligencia artificial aquí:
-* 💼 [LinkedIn](https://www.linkedin.com/in/mar%C3%ADa-luisa-ros-bolea-400780160/)
-* 🌐 [Portfolio Digital](https://malurosbolea-ux.github.io/digital-strategy-portfolio/)
+[cite_start]Para que se pueda probar el sistema en vivo, dejo aquí los accesos directos al proyecto[cite: 106]:
+* [cite_start]**Demo web interactiva (Streamlit):** [MarIA Streamlit](https://valoralia-copilot-demo-marai-nan6wokkfuzmbjcvpmmwl4.streamlit.app/) [cite: 108, 113]
+* [cite_start]**Código fuente:** [Google Colab](https://colab.research.google.com/drive/1Cu0X1PYFW4Nnv-6URQETEeO0zkXwhNdQ?usp=sharing) [cite: 86, 109, 114]
+* [cite_start]**Motor original del TFM:** [VALORALIA en AWS](http://51.20.2.178/) [cite: 107, 112]
+* [cite_start]**Repositorio:** [GitHub](https://github.com/malurosbolea-ux/valoralia-copilot-demo-MarAI) [cite: 110, 115]
 
----
+## Introducción y motivación
 
-## El proyecto: del motor que predice al producto que conversa
+[cite_start]Los modelos de lenguaje son muy capaces, pero cuando no conocen la respuesta tienden a inventarla con total seguridad, lo que se conoce como alucinación[cite: 21]. [cite_start]En un dominio como el inmobiliario eso no es un detalle menor: una cifra equivocada sobre impuestos o sobre normativa tiene consecuencias reales para quien la recibe[cite: 22]. 
 
-En mi TFM desarrollé **VALORALIA**, un modelo automatizado de valoración (AVM) híbrido que estima el precio de la vivienda en Madrid combinando datos tabulares y visión artificial a través de redes neuronales (ResNet50). Sin embargo, un modelo predictivo le habla a una API, no a una persona.
+[cite_start]Por eso quería un asistente en el que se pudiera confiar[cite: 23]. [cite_start]La técnica del RAG obliga al modelo a responder únicamente a partir de documentos verificados[cite: 24]. [cite_start]Sobre esa base he añadido un agente capaz de razonar y de ejecutar acciones a través de herramientas, una de las cuales es mi propio motor de tasación[cite: 25].
 
-Con **MarIA**, he construido el cuerpo que conversa. Es un asistente conversacional que soluciona el problema de las "alucinaciones" (invenciones de los modelos de lenguaje) en el crítico sector inmobiliario. Lo logra combinando **RAG (Retrieval-Augmented Generation)** y un **Agente ReAct** con llamada a herramientas. Ahora, el modelo de tasación no es un ente aislado, sino una herramienta fundamental dentro de un sistema interactivo y seguro.
+[cite_start]En mi TFM construí el cerebro que predice y en esta práctica construyo el cuerpo que conversa, razona y decide cuándo usar ese cerebro[cite: 36].
 
 ## Arquitectura del sistema
 
-El núcleo de MarIA toma decisiones en tiempo real para ofrecer respuestas fiables y estructuradas:
+[cite_start]El sistema parte de un componente sencillo pero decisivo, el router, que clasifica cada pregunta en dos caminos[cite: 39]:
 
-1.  **Router inteligente:** Clasifica la intención del usuario. Si busca información (normativa, impuestos, zonas), lo envía al sistema RAG. Si busca una acción (tasar, agendar), activa al agente.
-2.  **Sistema RAG (Cero alucinaciones):** Responde *exclusivamente* basándose en una base de conocimiento verificada (utilizando ChromaDB y embeddings multilingües). Si no tiene el dato, lo reconoce con total honestidad.
-3.  **Agente ReAct:** Sigue el ciclo analítico de *pensar, actuar y observar*. Dispone de cuatro herramientas clave:
-    * **Estimar precio:** Conecta directamente con el motor de VALORALIA.
-    * **Comparar zonas:** Analiza y compara diferencias de precio por metro cuadrado.
-    * **Buscar documentación:** Utiliza el RAG completo como una herramienta más (patrón de *RAG agéntico*).
-    * **Agendar visita:** Implementa un sistema *Human-in-the-loop*; el agente prepara la solicitud pero requiere confirmación de una persona humana antes de cerrarla definitivamente.
+1. [cite_start]**Información (RAG):** Si la pregunta es informativa (impuestos, normativa, conceptos), la envía al RAG, que responde solo desde la documentación verificada[cite: 40].
+2. [cite_start]**Acción (Agente):** Si la pregunta pide una acción (tasar, comparar zonas, agendar una visita), la envía al agente, que razona y ejecuta herramientas[cite: 41].
 
-## Evaluación y resultados
+[cite_start]El RAG, además, está disponible como una herramienta más del agente, un patrón que se conoce como RAG agéntico[cite: 42].
 
-Casi nadie evalúa su RAG, pero para mí ahí reside la diferencia entre un trabajo correcto y uno excelente. He medido el sistema de forma rigurosa empleando el framework oficial RAGAS y un juez propio basado en LLM:
+[cite_start]Como modelo generativo empleo Gemini 2.5 Flash, que admite llamada a funciones, una capacidad imprescindible para que el agente decida por sí mismo qué herramienta usar[cite: 48]. [cite_start]Para la base de datos vectorial del RAG utilizo ChromaDB[cite: 51].
+
+## Herramientas del agente
+
+[cite_start]Le he dado cuatro herramientas, cada una definida como una función de Python[cite: 57]:
+* [cite_start]**Estimar precio de una vivienda:** Integra mi motor VALORALIA[cite: 58].
+* [cite_start]**Comparar zonas:** Devuelve la diferencia de precio por metro cuadrado entre dos municipios[cite: 59].
+* [cite_start]**Buscar documentación:** Envuelve el RAG completo[cite: 60].
+* [cite_start]**Agendar una visita:** Aplica el patrón human-in-the-loop, preparando la solicitud pero dejándola pendiente de confirmación humana[cite: 61].
+
+## Evaluación
+
+[cite_start]He medido el sistema de dos formas independientes: con el framework oficial RAGAS y con un juez propio basado en un modelo de lenguaje[cite: 64, 65, 66].
 
 | Métrica | Valor | Qué mide |
-| :--- | :--- | :--- |
-| **Context recall (RAGAS)** | 1.00 | De lo relevante, qué proporción se recupera. |
-| **Answer relevancy (RAGAS)** | 0.90 | Si la respuesta va al grano de lo que se pregunta. |
-| **Fidelidad (Juez propio LLM)** | 0.93 | Mi propia medida de fidelidad comprobada con un modelo actuando como juez. |
-| **Acierto del router** | 100% | Clasificación perfecta entre consultas de información y de acción. |
+|---|---|---|
+| Faithfulness (RAGAS) | 0.75 | Si la respuesta se apoya en el contexto recuperado y no inventa. |
+| Answer relevancy (RAGAS) | 0.90 | Si la respuesta va al grano de lo que se pregunta. |
+| Context precision (RAGAS) | 0.88 | De lo recuperado, qué proporción es relevante. |
+| Context recall (RAGAS) | 1.00 | De lo relevante, qué proporción se recupera. |
+| Fidelidad (juez propio) | 0.93 | Mi propia medida de fidelidad con un LLM como juez. |
+| Relevancia (juez propio) | 1.00 | Mi propia medida de relevancia con un LLM como juez. |
+| Acierto del router | 100% | Clasificación correcta entre información y acción (6/6). |
 
-## Stack tecnológico
+[cite_start]*(Datos extraídos de la evaluación del modelo [cite: 68])*
 
-Para crear una experiencia fluida y unificada, he utilizado las siguientes piezas:
-* **LLM & Agentes:** Gemini 2.5 Flash, LangChain, LangGraph.
-* **Vectores y Embeddings:** ChromaDB, Sentence-Transformers (HuggingFace).
-* **Interfaz Web:** Streamlit (diseñada con una estética cuidada, combinando tonos *navy* con detalles en rosa pastel para reflejar la identidad visual de la marca).
-* **Machine Learning (Core):** XGBoost, ResNet50 (propios del motor de valoración VALORALIA).
+[cite_start]El 0.75 de fidelidad es esperable y no me preocupa, ya que algunas respuestas añaden matices de prudencia (recomendar consultar a un asesor) que no aparecen literalmente en el documento de origen[cite: 73, 74].
+
+## Limitaciones y líneas futuras
+
+[cite_start]Como en todo proyecto, hay limitaciones: la base de conocimiento de esta demo es pequeña (aunque la he ampliado a once páginas [cite: 102][cite_start]) y la herramienta de tasación utiliza valores orientativos por metro cuadrado mientras no conecto el modelo real completo[cite: 78, 80].
+
+[cite_start]Como líneas futuras me planteo conectar el modelo real de VALORALIA, ampliar la documentación con normativa autonómica, dotar a MarIA de memoria de conversación entre turnos y desplegar el asistente sobre la misma infraestructura de AWS donde ya vive el motor de tasación[cite: 85].
 
 ---
 
-## Instalación y despliegue paso a paso
-
-Si quieres probar a MarIA, te lo dejo todo preparado para que lo hagas sin complicaciones, paso a paso:
-
-### Opción 1: En tu ordenador local
-1.  Clona este repositorio en tu equipo.
-2.  Instala las dependencias necesarias ejecutando:
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  Lanza la aplicación de Streamlit:
-    ```bash
-    streamlit run app.py
-    ```
-4.  Pega tu clave de Google Gemini en la barra lateral de la interfaz y empieza a hablar con MarIA.
-
-### Opción 2: Desde Google Colab (Sin instalar nada)
-Si prefieres no instalar nada, ejecuta este bloque en una celda de un notebook de Colab:
-```bash
-!pip install -q -r requirements.txt
-!npm install -g localtunnel
-!streamlit run app.py &>/content/log.txt &
-!npx localtunnel --port 8501
+**Autoría**
+Desarrollado por María Luisa Ros Bolea. 
+[cite_start]Máster en Big Data e Inteligencia Artificial, CEU San Pablo, 2026[cite: 4, 5].
